@@ -1,0 +1,26 @@
+
+#!/bin/bash
+
+## Use something like this:
+#      sh -c "$(curl -fsSL http://10.0.100.106:8000/bin/cleanup)"
+
+echo "✔ Remove APT cache"
+apt clean -y
+apt autoclean -y
+
+echo "✔ Remove all APT files"
+find /var/lib/apt -type f | xargs rm -f
+
+echo "✔ Clear cache ( /var/cache/* )"
+find /var/cache -type f -exec rm -rf {} \;
+
+echo "✔ Clear docs ( /usr/share/doc* )"
+rm -rf /usr/share/doc/*
+rm -rf /usr/share/doc-base/*
+
+echo "✔ Cleanup log files ( /var/log/* ) "
+find /var/log -type f | while read f; do echo -ne '' > $f; done;
+
+
+echo
+echo "👍 Finished running clean script."
