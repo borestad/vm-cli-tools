@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd "$(dirname $0)"
+
+
+find . -type f -executable | xargs realpath | while IFS= read -r fname; do
+  ln -sfv $fname /usr/local/bin/
+done

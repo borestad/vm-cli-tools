@@ -1,15 +1,14 @@
 #!/bin/bash
 
-echo "Cleaning Linux Headers"
+#echo "✔ Cleaning Linux Headers"
 #echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
 #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge
-echo ""
+#echo ""
 
-echo "Cleaning orphan .deb packages"
+echo "✔ Cleaning orphan .deb packages"
 deborphan | xargs sudo apt-get -y remove --purge
-echo ""
 
-echo "Cleaning APT"
+echo "✔ Cleaning APT"
 sudo apt-get -y autoremove
 sudo apt -y autoclean
 sudo apt -y clean
