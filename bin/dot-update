@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname $0)"
+cd "$(dirname "$(realpath "$0")")"/
 
 echo "✔ Updating tools"
-git -C . pull --ff-only origin main
+git --quiet -C . pull --ff-only origin main

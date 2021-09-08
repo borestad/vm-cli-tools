@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname $0)"
+cd "$(dirname "$(realpath "$0")")"/
 
 
 find . -type f -executable | xargs realpath | while IFS= read -r fname; do
