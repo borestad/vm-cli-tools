@@ -1,26 +1,51 @@
-
+# ------------------------------------------------------
 #!/bin/bash
 
-## Use something like this:
-#      sh -c "$(curl -fsSL http://10.0.100.106:8000/bin/cleanup)"
+echo "Cleaning Linux Headers"
+#echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
+#dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge
+echo ""
 
-echo "✔ Remove APT cache"
-apt clean -y
-apt autoclean -y
+echo "Cleaning orphan .deb packages"
+deborphan | xargs sudo apt-get -y remove --purge
+echo ""
 
-echo "✔ Remove all APT files"
+echo "Cleaning APT"
+sudo apt-get -y autoremove
+sudo apt -y autoclean
+sudo apt -y clean
+echo ""
+
+echo "✔ Remove APT files"
 find /var/lib/apt -type f | xargs rm -f
 
-echo "✔ Clear cache ( /var/cache/* )"
+echo "✔ Clear cache"
 find /var/cache -type f -exec rm -rf {} \;
 
-echo "✔ Clear docs ( /usr/share/doc* )"
-rm -rf /usr/share/doc/*
-rm -rf /usr/share/doc-base/*
+echo "✔ Remove MAN files"
+find /usr/share/man -iname '*.gz' | xargs rm -f
 
-echo "✔ Cleanup log files ( /var/log/* ) "
-find /var/log -type f | while read f; do echo -ne '' > $f; done;
+echo "✔ Remove DOC files"
+find /usr/share/doc -iname '*.gz' | xargs rm -f
 
+echo "✔ Remove INFO files"
+find /usr/share/info -iname '*.gz' | xargs rm -f
 
-echo
-echo "👍 Finished running clean script."
+echo "✔ Cleanup journal logs"
+journalctl --rotate
+journalctl --vacuum-time=1s
+
+echo "✔ Cleanup Locales"
+find /usr/share/locale -mindepth 1 -type d | grep -v en | xargs rm -rfv
+find /usr/share/i18n/locales -type f | grep -vi en_ | grep -vi posix | grep -v "/C" | grep -v "locales/i18n" | xargs rm -rfv
+rm -rfv /usr/share/doc/*
+rm -rfv /usr/share/man/*
+#rm -rfv /usr/share/info/*
+rm -rfv /usr/share/calendar/*
+rm -rfv /var/cache/apt/pkgcache.bin
+rm -rfv /var/cache/apt/srcpkgcache.bin
+rm -fv /var/lib/dpkg/available-old
+
+echo "✔ Cleanup /var/log/*"
+truncate -s 0 /var/log/*.log
+truncate -s 0 /var/log/**/*.log
