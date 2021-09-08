@@ -1,7 +1,1 @@
 #!/bin/bash
-
-# wget -qN https://raw.githubusercontent.com/borestad/vm-cli-tools/main/bin/cleanup
-
-cd /usr/local/bin/
-
-wget https://raw.githubusercontent.com/borestad/vm-cli-tools/main/bin/dot-setup

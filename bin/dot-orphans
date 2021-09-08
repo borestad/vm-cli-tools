@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Cleaning orphan .deb packages"
+deborphan | xargs sudo apt-get -y remove --purge
+echo ""
+
+echo "Cleaning APT"
+sudo apt-get -y autoremove
+sudo apt -y autoclean
+sudo apt -y clean
+echo ""
