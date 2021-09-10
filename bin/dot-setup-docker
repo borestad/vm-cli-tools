@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DPATH="/usr/local/lib/docker/cli-plugins"
+mkdir -p $DPATH
+
+# Create temporary folder
+cd $(mktemp -d)
+
+wget https://github.com/docker/compose/releases/download/v2.0.0-rc.3/docker-compose-linux-amd64 -O docker-compose
+
+chmod +x docker-compose
+mv ./docker-compose $DPATH/docker-compose
