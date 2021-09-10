@@ -10,3 +10,4 @@ wget https://github.com/docker/compose/releases/download/v2.0.0-rc.3/docker-comp
 
 chmod +x docker-compose
 mv ./docker-compose $DPATH/docker-compose
+ln -sfv $DPATH/docker-compose /usr/local/bin/
