@@ -1,0 +1,8 @@
+#!/bin/bash
+
+
+## Creates a tiny baseline for debian11
+#    sh -c "$(curl -fsSL http://<server>/shrink-debian11)"
+
+apt purge vim-* postfix man-db x11-common libx11* xauth libvulkan1 reportbug libgl1 bind9* mime-support libxft2 apt-listchanges \
+  python3-reportbug doc-debian locales tasksel* netcat* wamerican perl python* debian-faq krb5-locales media-types libmagic* libdrm*
