@@ -11,12 +11,10 @@ PROVIDERS="
 10.0.9.9#pihole1
 10.0.8.8#pihole2
 1.1.1.1#cloudflare1
-1.0.0.1#cloudflare2
-4.2.2.1#level3
+1.1.1.2#cloudflare2
 8.8.8.8#google
 9.9.9.9#quad9-1
 9.9.9.11#quad9-2
-80.80.80.80#freenom
 208.67.222.123#opendns
 199.85.126.20#norton
 185.228.168.168#cleanbrowsing
