@@ -34,6 +34,16 @@ echo "✔ Cleanup journal logs"
 journalctl --rotate
 journalctl --vacuum-time=1s
 
+echo "✔ Cleanup Locales"
+find /usr/share/locale -mindepth 1 -type d | grep -v en | xargs rm -rfv
+find /usr/share/i18n/locales -type f | grep -vi en_ | grep -vi posix | grep -v "/C" | grep -v "locales/i18n" | xargs rm -rfv
+rm -rfv /usr/share/doc/*
+rm -rfv /usr/share/man/*
+#rm -rfv /usr/share/info/*
+rm -rfv /usr/share/calendar/*
+rm -rfv /var/cache/apt/pkgcache.bin
+rm -rfv /var/cache/apt/srcpkgcache.bin
+rm -fv /var/lib/dpkg/available-old
 
 echo "✔ Cleanup /var/log/*"
 truncate -s 0 /var/log/*.log
