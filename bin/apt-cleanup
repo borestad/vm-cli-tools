@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "Cleaning Linux Headers"
+#echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs sudo apt-get -y purge
+#dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge
+echo ""
+
+echo "Cleaning orphan .deb packages"
+deborphan | xargs sudo apt-get -y remove --purge
+echo ""
+
+echo "Cleaning APT"
+sudo apt-get -y autoremove
+sudo apt -y autoclean
+sudo apt -y clean
+echo ""
+
+echo "✔ Remove APT files"
+find /var/lib/apt -type f | xargs rm -f
+
+echo "✔ Clear cache"
+find /var/cache -type f -exec rm -rf {} \;
+
+echo "✔ Remove MAN files"
+find /usr/share/man -iname '*.gz' | xargs rm -f
+
+echo "✔ Remove DOC files"
+find /usr/share/doc -iname '*.gz' | xargs rm -f
+
+echo "✔ Remove INFO files"
+find /usr/share/info -iname '*.gz' | xargs rm -f
+
+echo "✔ Cleanup journal logs"
+journalctl --rotate
+journalctl --vacuum-time=1s
+
+
+echo "✔ Cleanup /var/log/*"
+truncate -s 0 /var/log/*.log
+truncate -s 0 /var/log/**/*.log
