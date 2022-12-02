@@ -49,7 +49,7 @@ truncate -s 0 /var/log/*.log
 truncate -s 0 /var/log/**/*.log
 
 
-if ! command -v brew > /dev/null 2>&1; then
+if command -v brew > /dev/null 2>&1; then
   echo "✓ Brew cleanup"
   brew cleanup -s &> /dev/null
   rm -rf $(brew --cache) &> /dev/null
