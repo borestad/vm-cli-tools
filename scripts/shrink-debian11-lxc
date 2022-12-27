@@ -61,24 +61,25 @@ apt purge libmaxminddb0
 
 
 cat > /etc/apt/apt.conf.d/99custom <<"EOF"
-APT::Install-Recommends "0";
-APT::Install-Suggests "0";
-Acquire::GzipIndexes "true";
 Acquire::CompressionTypes::Order:: "gz";
+Acquire::GzipIndexes "true";
+Acquire::IndexTargets::deb-src::Sources::KeepCompressedAs "gz";
 Acquire::IndexTargets::deb::Packages::KeepCompressedAs "gz";
 Acquire::IndexTargets::deb::Translations::KeepCompressedAs "gz";
-Acquire::IndexTargets::deb-src::Sources::KeepCompressedAs "gz";
-Dir::Cache {
-  srcpkgcache "";
-  pkgcache "";
-}
+Acquire::Languages "none";
+APT::AutoRemove::RecommendsImportant "false";
+APT::AutoRemove::SuggestsImportant "false";
+APT::Install-Recommends "false";
+APT::Install-Suggests "false";
 EOF
+#Dir::Cache {
+#   srcpkgcache "";
+#   pkgcache "";
+# }
+
 
 # https://sleeplessbeastie.eu/2018/09/03/how-to-remove-useless-localizations/
-apt install localepurge ngetty
-cd /sbin && rm getty && ln -sfv mingetty getty
-
-cd /sbin && getty && ln -sfv mingetty agetty
+apt install localepurge
 
 rm -rI /usr/share/locale/!(en) # TODO: Also keep locale.alias
 rm -rfv /usr/share/man/*
@@ -91,8 +92,17 @@ apt-get clean
 # Disable imklog (causing systemd to become a degraded status)
 sed -i '/imklog/s/^/#/' /etc/rsyslog.conf
 
-# Disable local DNS stub
-# https://www.turek.dev/posts/disable-systemd-resolved-cleanly/
+systemctl disable systemd-pstore.service
+systemctl disable remote-fs.target
+systemctl disable fstrim.timer
+systemctl disable e2scrub_reap.service
+systemctl disable e2scrub_all.timer
+
+#systemctl mask serial-getty@.service
+#systemctl mask container-getty@1.service
+#systemctl mask container-getty@2.service
+systemctl mask systemd-journald-audit.socket
+systemctl mask sys-kernel-config.mount
 
 # bsdextrautils                           optional
 # dfc                                     optional
@@ -276,21 +286,3 @@ sed -i '/imklog/s/^/#/' /etc/rsyslog.conf
 # ucf                                     standard
 # wget                                    standard
 # xz-utils                                standard
-
-
-# Marking all packages as auto-installed first, to allow effective autoremove afterwards
-# [  OK  ] DietPi-PREP | apt-mark auto adduser apt apt-utils base-files base-passwd bash bash-completion bsdextrautils bsdutils ca-certificates coreutils cron curl dash dbus debconf debconf-i18n debian-archive-keyring debianutils deborphan dfc diffutils distro-info-data dmsetup dpkg e2fsprogs findutils gcc-10-base gcc-9-base gpgv grep gzip hostname htop ifupdown init init-system-helpers iproute2 iputils-ping isc-dhcp-client isc-dhcp-common kmod less libacl1 libapparmor1 libapt-pkg6.0 libargon2-1 libattr1 libaudit-common libaudit1 libblkid1 libbpf0 libbrotli1 libbsd0 libbz2-1.0 libc-bin libc-l10n libc6 libcap-ng0 libcap2 libcap2-bin libcbor0 libcom-err2 libcrypt1 libcryptsetup12 libcurl4 libdb5.3 libdbus-1-3 libdebconfclient0 libdevmapper1.02.1 libdns-export1110 libedit2 libelf1 libestr0 libexpat1 libext2fs2 libfastjson4 libffi7 libfido2-1 libgcc-s1 libgcrypt20 libgdbm-compat4 libgdbm6 libgmp10 libgnutls30 libgpg-error0 libgssapi-krb5-2 libhogweed6 libidn2-0 libip4tc2 libisc-export1105 libjson-c5 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0 libldap-2.4-2 liblocale-gettext-perl liblockfile-bin liblognorm5 liblz4-1 liblzma5 libmd0 libmnl0 libmount1 libncurses6 libncursesw6 libnettle8 libnewt0.52 libnghttp2-14 libnl-3-200 libnl-genl-3-200 libnsl2 libnss-systemd libp11-kit0 libpam-modules libpam-modules-bin libpam-runtime libpam-systemd libpam0g libpcre2-8-0 libpcre3 libperl5.32 libpopt0 libprocps8 libpsl5 libpython3.9-minimal librtmp1 libsasl2-2 libsasl2-modules-db libseccomp2 libselinux1 libsemanage-common libsemanage1 libsepol1 libslang2 libsmartcols1 libss2 libssh2-1 libssl1.1 libstdc++6 libsystemd0 libtasn1-6 libtext-charwidth-perl libtext-iconv-perl libtext-wrapi18n-perl libtinfo6 libtirpc-common libtirpc3 libudev1 libunistring2 libuuid1 libwrap0 libxtables12 libxxhash0 libzstd1 localepurge locales login logrotate logsave lsb-base lsof mawk mount nano ncdu ncurses-base ncurses-bin ncurses-term neofetch netbase netcat-traditional openssh-client openssh-server openssh-sftp-server openssl passwd perl perl-base perl-modules-5.32 procps python-apt-common python3-minimal python3.9-minimal readline-common ripgrep rsyslog runit-helper sed sensible-utils ssh ssl-cert systemd systemd-sysv systemd-timesyncd sysvinit-utils tar tzdata ucf util-linux wget whiptail xz-utils zlib1g
-
-# The following packages will be REMOVED:
-#   apt-utils* bsdextrautils* dbus* debconf-i18n* deborphan* dfc*
-#   distro-info-data* e2fsprogs* ifupdown* isc-dhcp-client* isc-dhcp-common*
-#   kmod* less* libcbor0* libdbus-1-3* libdns-export1110* libedit2* libestr0*
-#   libexpat1* libext2fs2* libfastjson4* libfido2-1* libgdbm-compat4* libgdbm6*
-#   libisc-export1105* liblocale-gettext-perl* liblockfile-bin* liblognorm5*
-#   libnss-systemd* libpam-systemd* libperl5.32* libpython3.9-minimal* libss2*
-#   libtext-charwidth-perl* libtext-iconv-perl* libtext-wrapi18n-perl* libwrap0*
-#   localepurge* logrotate* logsave* lsof* ncdu* ncurses-term* neofetch*
-#   netbase* netcat-traditional* openssh-client* openssh-server*
-#   openssh-sftp-server* perl* perl-modules-5.32* python-apt-common*
-#   python3-minimal* python3.9-minimal* readline-common* ripgrep* rsyslog*
-#   runit-helper* ssh* ssl-cert* systemd-timesyncd* ucf* xz-utils*
