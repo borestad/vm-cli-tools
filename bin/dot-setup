@@ -2,6 +2,7 @@
 
 cd "$(dirname "$(realpath "$0")")"/
 
+echo "Symlinking"
 
 find . -type f -executable | xargs realpath | while IFS= read -r fname; do
   ln -sfv $fname /usr/local/bin/
