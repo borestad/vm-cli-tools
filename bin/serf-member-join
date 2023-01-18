@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Inspiration: https://github.com/hashicorp/serf/blob/master/demo/web-load-balancer/setup_serf.sh
+
+while read line; do
+    NAME=`echo $line | awk '{print \$1 }'`
+    IP=`echo $line | awk '{print \$2 }'`
+    ROLE=`echo $line | awk '{print \$3 }'`
+    # if [ "x${ROLE}" != "xweb" ]; then
+    #     continue
+    # fi
+    echo $line
+
+done
