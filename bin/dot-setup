@@ -13,4 +13,4 @@ done
 
 
 echo "Custom config"
-cp -v $ROOT/etc/apt/apt.conf.d/99custom /etc/apt/apt.conf.d/
+ln -sfv $ROOT/etc/apt/apt.conf.d/99custom /etc/apt/apt.conf.d/
