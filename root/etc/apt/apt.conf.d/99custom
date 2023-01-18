@@ -1,0 +1,10 @@
+Acquire::CompressionTypes::Order:: "gz";
+Acquire::GzipIndexes "true";
+Acquire::IndexTargets::deb-src::Sources::KeepCompressedAs "gz";
+Acquire::IndexTargets::deb::Packages::KeepCompressedAs "gz";
+Acquire::IndexTargets::deb::Translations::KeepCompressedAs "gz";
+Acquire::Languages "none";
+APT::AutoRemove::RecommendsImportant "false";
+APT::AutoRemove::SuggestsImportant "false";
+APT::Install-Recommends "false";
+APT::Install-Suggests "false";

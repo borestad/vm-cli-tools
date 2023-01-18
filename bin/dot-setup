@@ -1,9 +1,16 @@
 #!/bin/bash
 
+set -e
+set -u
+
+ROOT=$(git rev-parse --show-toplevel)
 cd "$(dirname "$(realpath "$0")")"/
 
 echo "Symlinking"
-
 find . -type f -executable | xargs realpath | while IFS= read -r fname; do
   ln -sfv $fname /usr/local/bin/
 done
+
+
+echo "Custom config"
+cp -v $ROOT/etc/apt/apt.conf.d/99custom /etc/apt/apt.conf.d/
