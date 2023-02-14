@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+
+systemctl stop systemd-journald
+find /var/log/journal -name "*.journal" | xargs rm
+systemctl start systemd-journald
+
+
+find /var/log -maxdepth 1 -regex '.*\.[0-9]+$' | xargs rm -fv
+find /var/log -iname '*.gz' | xargs rm -fv
+find /var/log -iname '*.xz' | xargs rm -fv
+
