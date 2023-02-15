@@ -32,9 +32,9 @@ find /usr/share/doc -iname '*.gz' | xargs rm -f
 echo "✔ Remove INFO files"
 find /usr/share/info -iname '*.gz' | xargs rm -f
 
-echo "✔ Cleanup journal logs"
-journalctl --rotate
-journalctl --vacuum-time=10d
+# echo "✔ Cleanup journal logs"
+# journalctl --rotate
+# journalctl --vacuum-time=10d
 
 echo "✔ Cleanup Locales"
 find /usr/share/locale -mindepth 1 -type d | grep -v en | xargs rm -rfv
