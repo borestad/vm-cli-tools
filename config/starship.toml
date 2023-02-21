@@ -1,0 +1,30 @@
+[username]
+style_user = "white bold"
+style_root = "red bold"
+format = "[$user]($style) "
+disabled = false
+show_always = true
+
+
+#[time]
+#disabled = false
+#format = '🕙[\[ $time \]]($style) '
+#time_format = "%T"
+#utc_time_offset = "-5"
+#time_range = "10:00:00-14:00:00"
+
+[custom.ip]
+command = "hostname -I | awk '{print $1}'"
+when = """ test 1 == 1 """
+style = "bold dimmed blue"
+#when = true
+format = "☁️  [$output]($style)\\] "
+
+[memory_usage]
+disabled = false
+threshold = -1
+style = "bold dimmed yellow"
+format = "\\[[${ram}]($style) "
+
+[container]
+disabled = true
