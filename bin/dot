@@ -1,3 +1,275 @@
 #!/bin/bash
 
-cd "$(dirname "$(realpath "$0")")"/
+echo 'DOT!'
+
+apt install -y curl
+
+mkdir -p /opt/repos/ubuntu-tools
+cd /opt/repos/ubuntu-tools
+
+curl -s https://raw.githubusercontent.com/borestad/vm-cli-tools/main/bin/apt-cleanup >| apt-cleanup
+
+
+chmod +x /opt/repos/ubuntu-tools/*
+
+find . -type f -executable | xargs realpath | while IFS= read -r fname; do
+  ln -sfv $fname /usr/local/bin/
+done
+
+
+cat > /etc/apt/apt.conf.d/99custom <<"EOF"
+APT::Install-Recommends "false";
+APT::Install-Suggests "false";
+APT::AutoRemove::RecommendsImportant "false";
+APT::AutoRemove::SuggestsImportant "false";
+Acquire::Languages "none";
+Dir::Cache::srcpkgcache "";
+Acquire::GzipIndexes "true";
+Acquire::IndexTargets::deb::Packages::KeepCompressedAs "lz4";
+Acquire::IndexTargets::deb::Translations::KeepCompressedAs "lz4";
+Acquire::IndexTargets::deb-src::Sources::KeepCompressedAs "lz4";
+Dir::Cache {
+  srcpkgcache "";
+  pkgcache "";
+}
+EOF
+
+
+#apt purge -y ubuntu-minimal ubuntu-standard
+apt-get purge --auto-remove ubuntu-minimal ubuntu-standard
+
+
+# Purge ubuntu-standard (except wget, bash-completion and some extras)
+apt-get purge --auto-remove \
+  bind9-dnsutils \
+  busybox-static \
+  cpio \
+  dmidecode \
+  dosfstools \
+  ed \
+  file \
+  ed \
+  hdparm \
+  info \
+  libpam-systemd \
+  lshw \
+  lsof \
+  man-db \
+  media-types \
+  nftables \
+  parted \
+  pciutils \
+  psmisc \
+  rsync \
+  strace \
+  time \
+  usbutils \
+  xz-utils \
+  apparmor \
+  command-not-found \
+  friendly-recovery \
+  iptables \
+  iputils-tracepath \
+  irqbalance \
+  manpages \
+  mtr-tiny \
+  ntfs-3g \
+  plymouth \
+  plymouth-theme-ubuntu-text \
+  tcpdump \
+  telnet \
+  ufw \
+  update-manager-core \
+  uuid-runtime
+
+
+apt install -y curl wget deborphan htop dfc tzdata bash-completion openssh-server logrotate
+
+# Purge ubuntu-minimal (...)
+apt-get purge --auto-remove vim-* eject tnftp pci.ids usb.ids bind9-* gettext-base isc-dhcp-client isc-dhcp-common groff-base udev libx11-* fuse3
+
+# Purge huge libs
+apt-get purge --auto-remove libicu70
+
+apt install -y curl wget deborphan htop dfc tzdata bash-completion openssh-server logrotate nano cron
+
+deborphan | xargs apt-get -y remove
+
+# -------------------------------------------------------------------------------------------
+# root@template-ubuntu22-bare-v1:/usr/local/bin# apt depends ubuntu-minimal
+# ubuntu-minimal
+#   Depends: adduser
+#   Depends: apt
+#   Depends: apt-utils
+#   Depends: console-setup
+#   Depends: debconf
+#   Depends: debconf-i18n
+#   Depends: e2fsprogs
+#   Depends: eject
+#   Depends: init
+#   Depends: iproute2
+#   Depends: iputils-ping
+#   Depends: isc-dhcp-client
+#   Depends: kbd
+#   Depends: kmod
+#   Depends: less
+#   Depends: locales
+#   Depends: lsb-release
+#   Depends: mawk
+#   Depends: mount
+#   Depends: netbase
+#   Depends: netcat-openbsd
+#   Depends: netplan.io
+#   Depends: passwd
+#   Depends: procps
+#   Depends: python3
+#   Depends: sensible-utils
+#   Depends: sudo
+#     sudo-ldap
+#   Depends: tzdata
+#   Depends: ubuntu-advantage-tools
+#   Depends: ubuntu-keyring
+#   Depends: udev
+#   Depends: vim-tiny
+#   Depends: whiptail
+#   Recommends: rsyslog
+#   Recommends: usrmerge
+# ------------------------------------------------------------------------------------------------
+
+
+
+# apparmor
+
+# apt purge \
+#   bind9-dnsutils* \
+#   bind9-host* \
+#   bind9-libs* \
+#   console-setup \
+#   cpio* \
+#   cpp-9* \
+#   cpp* \
+#   dmidecode* \
+#   dosfstools* \
+#   ed* \
+#   eject \
+#   fontconfig-config* \
+#   fonts-dejavu-core* \
+#   friendly-recovery \
+#   ftp* \
+#   fuse* \
+#   gcc-9-base* \
+#   gettext-base* \
+#   groff-base* \
+#   hdparm* \
+#   info* \
+#   install-info* \
+#   iptables* \
+#   iputils-tracepath* \
+#   iso-codes \
+#   keyboard-configuration \
+#   kmod \
+#   krb5-locales* \
+#   libdrm-amdgpu1* \
+#   libdrm-common* \
+#   libdrm-intel1* \
+#   libdrm-nouveau2* \
+#   libdrm-radeon1* \
+#   libdrm2* \
+#   libfontconfig1* \
+#   libfontenc1* \
+#   libfreetype6* \
+#   libfuse2* \
+#   libip6tc2* \
+#   liblmdb0* \
+#   libmaxminddb0* \
+#   libmpc3* \
+#   libmpfr6* \
+#   libnetfilter-conntrack3* \
+#   libnfnetlink0* \
+#   libnftnl11* \
+#   libnuma1* \
+#   libparted2* \
+#   libpcap0.8* \
+#   libpci3* \
+#   libpciaccess0* \
+#   libpipeline1* \
+#   libplymouth5* \
+#   libpng16-16* \
+#   libsasl2-2* \
+#   libsasl2-modules-db* \
+#   libsensors-config* \
+#   libsensors5* \
+#   libsqlite3* \
+#   libuchardet0* \
+#   libunwind8* \
+#   libusb-1.0-0* \
+#   libuv1* \
+#   libvulkan1* \
+#   libx11-6* \
+#   libx11-xcb1* \
+#   libx11* \
+#   libxcb-dri2-0* \
+#   libxcb-dri3-0* \
+#   libxcb-glx0* \
+#   libxcb-present0* \
+#   libxcb-shape0* \
+#   libxcb-sync1* \
+#   libxcb1 \
+#   libxcomposite1* \
+#   libxcursor1* \
+#   libxdamage1* \
+#   libxext6* \
+#   libxfixes3* \
+#   libxft2* \
+#   libxi6* \
+#   libxinerama1* \
+#   libxkbfile1* \
+#   libxml2 \
+#   libxmuu1* \
+#   libxpm4* \
+#   libxrandr2* \
+#   libxrender1* \
+#   libxshmfence1* \
+#   libxv1* \
+#   libxxf86dga1* \
+#   libxxf86vm1* \
+#   lshw* \
+#   lsof* \
+#   ltrace* \
+#   man-db* \
+#   manpages* \
+#   mime-support \
+#   mtr-tiny* \
+#   ntfs-3g* \
+#   parted* \
+#   pci.ids* \
+#   pciutils* \
+#   plymouth-theme-ubuntu-text* \
+#   plymouth* \
+#   popularity-contest* \
+#   postfix* \
+#   powermgmt-base* \
+#   python* \
+#   python3-distro-info* \
+#   python3-distupgrade* \
+#   python3-update-manager* \
+#   strace* \
+#   tcpdump* \
+#   telnet* \
+#   tzdata \
+#   ubuntu-minimal \
+#   ubuntu-release-upgrader-core* \
+#   ubuntu-standard \
+#   ufw* \
+#   update-manager-core \
+#   usb.ids* \
+#   usbutils* \
+#   vim-* \
+#   x11-* \
+#   x11-apps \
+#   x11-utils libgl* \
+#   x11-xserver-utils \
+#   xauth \
+#   xbase-clients \
+#   xkb-data \
+#   xxd

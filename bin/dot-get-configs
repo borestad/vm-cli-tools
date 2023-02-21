@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkdir -p $HOME/.config/htop
+mkdir -p $HOME/.config/neofetch
+
+wget -nv https://raw.githubusercontent.com/borestad/vm-cli-tools/main/config/htoprc -O $HOME/.config/htop/htoprc
+wget -nv https://raw.githubusercontent.com/borestad/vm-cli-tools/main/config/neofetch.conf -O $HOME/.config/neofetch/config.conf
+wget -nv https://raw.githubusercontent.com/borestad/vm-cli-tools/main/config/starship.toml -O $HOME/.config/starship.toml
