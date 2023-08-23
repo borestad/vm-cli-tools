@@ -15,8 +15,11 @@ git tag -l | xargs git tag -d
 print 'Clear the reflog:'
 git reflog expire --expire=now --all --verbose
 
+print 'Ensure all tmp files are gone'
+git prune --verbose
+
 print 'Delete all dangling objects'
-git gc --prune=now
+git gc --prune=now || git prune --verbose
 
 hr -
 echo 'AFTER'
