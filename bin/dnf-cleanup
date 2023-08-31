@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#echo "Cleaning Linux Headers"
+#echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs apt-get -y purge
+#echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs apt-get -y purge
+#dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge
+#echo ""
+
+echo "Cleaning orphan packages"
+package-cleanup --orphans
+echo ""
+
+echo "Cleaning DNF"
+# dnf clean all --verbose
+echo ""
+
+echo "✔ Clear cache"
+find /var/cache -type f -exec rm -rf {} \;
+
+echo "✔ Remove MAN files"
+find /usr/share/man -iname '*.gz' | xargs rm -f
+
+echo "✔ Remove DOC files"
+find /usr/share/doc/* | xargs rm -rfv
+
+echo "✔ Remove INFO files"
+find /usr/share/info -iname '*.gz' | xargs rm -f
+
+# echo "✔ Cleanup journal logs"
+# journalctl --rotate
+# journalctl --vacuum-time=10d
+
+echo "✔ Cleanup Locales"
+find /usr/share/locale -maxdepth 1 -type d | sort | grep -iv /usr/share/locale/en | grep -iv 'C.utf8' | xargs rm -rfv
+
+find /usr/share/i18n/locales -type f | grep -vi en_ | grep -vi posix | grep -v "/C" | grep -v "locales/i18n" | grep -v "translit" | xargs rm -rfv
+find /usr/share/i18n/locales -type f | grep -v en_ | grep -vi en_US | xargs rm -rfv
+
+
+find /usr/share/i18n/charmaps -type f | egrep -iv '8859|utf|ansi|unicode' | xargs rm -rfv
+find / -type f -regex '^.*\(__pycache__\|\.py[co]\)$' | xargs rm -rf
+find /usr/lib64/gconv/ -type f -iname '*.so' | egrep -iv '8859|utf|ansi|unicode' | xargs rm -rfv
+find /usr/share/licenses/* | xargs rm -rfv
+
+# echo "✔ Cleanup /var/log/*"
+# truncate -s 0 /var/log/*.log
+# truncate -s 0 /var/log/**/*.log
